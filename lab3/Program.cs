@@ -10,12 +10,14 @@ namespace lab3
 
         private readonly int[] coins = new int[3];
 
+        private int[] restTable = new int[3];
+
         public CashRegister(int[] coins)
         {
             this.coins = coins;
         }
 
-        int[] Payment(int[] income, int amount)
+        public int[] Payment(int[] income, int amount)
         {
             if(amount > getAmount(income))
             {
@@ -23,12 +25,43 @@ namespace lab3
             }
             int rest = getRemainder(income, amount);
             registerCash(income);
-            return calculateRest(rest);
+            return calculateRest(rest, restTable);
         }
 
-        private int[] calculateRest(int rest)
+        private int[] calculateRest(int rest, int[] result)
         {
-
+            if(rest >= 5)
+            {
+                if(rest % 5 == 0)
+                {
+                    result[five] = rest / 5;
+                    return result;
+                }
+                else
+                {
+                    result[five] = rest / 5;
+                    return calculateRest(rest - result[five]*5, result);
+                }
+            }
+            if(rest < 5 && rest >= 2)
+            {
+                if (rest % 2 == 0)
+                {
+                    result[two] = rest / 2;
+                    return result;
+                }
+                else
+                {
+                    result[two] = rest / 2;
+                    return calculateRest(rest - result[two]*2, result);
+                }
+            }
+            if(rest <= 1)
+            {
+                result[one] = 1;
+                return result;
+            }
+            return result;
         }
 
         private int getAmount(int[] coins)
@@ -52,59 +85,12 @@ namespace lab3
     {
         static void Main(string[] args)
         {
-            //Console.WriteLine(fibonacci(42));
-            Console.WriteLine(sinus(90));
-        }
-        static public long fibonacci(int n)
-        {
-            long[] tab = new long[n];
-            Array.Fill<long>(tab, -1);
-            return fib(n, tab);
-        }
-        static private long fib(int n, long[] mem)
-        {
-            if(n < 0)
-            {
-                throw new ArgumentException();
-            }
-            if (n == 0)
-            {
-                return 0;
-            }
-            if (n == 1)
-            {
-                return 1;
-            }
+            int[] coins = { 5, 2, 3 };
+            int[] income = { 3, 5, 3 };
+            CashRegister payment = new CashRegister(coins);
+            int[] result = payment.Payment(income, 12);
 
-            if(mem[n-1] == -1)
-            {
-                mem[n - 1] = fib(n - 1, mem);
-            }
-            if(mem[n-2] == -1)
-            {
-                mem[n - 2] = fib(n - 2, mem);
-            }
-
-            //Console.WriteLine($"f({n}) = f({n - 1}) + f({n - 2})");
-            return mem[n-1] + mem[n-2];
-        }
-
-        static public double sinus(int i)
-        {
-            return (Math.PI * i)/(180*Math.PI);
+            Console.WriteLine($"złotówki: {result[0]}, dwu-złotówki: {result[1]}, piątki: {result[2]}");
         }
     }
-    /*class SinTable
-    {
-        private double[] sinTable;
-        static SinTable()
-        {
-
-        }
-        
-        public static double Sin(int degree)
-        {
-
-        }
-    }*/
 }
